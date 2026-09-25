@@ -56,7 +56,6 @@ Open <http://127.0.0.1:5000> in a browser. Stop the local server by pressing **C
 | `templates/index.html` | Page structure and browser-side file selection, ordering, and submission behavior. |
 | `static/style.css` | Page colors, typography, layout, and responsive styling. |
 | `requirements.txt` | Python packages needed to run the app. |
-| `render.yaml` | Render web service configuration for deployment. |
 | `.gitignore` | Keeps local environments, secrets, and PDF files out of Git commits. |
 | `GUIDE.txt` | Plain-text project overview, setup, usage, and review instructions. |
 
@@ -66,5 +65,7 @@ The app accepts requests up to 50 MB total. Uploaded files are passed to PyPDF2 
 
 ## Publish or deploy
 
-The GitHub repository stores the source code; GitHub does not run this Flask app as a website. To make a browser-accessible site, deploy it as a Python web service on a host such as Render. The included `render.yaml` configures the build and Gunicorn start command. A deployed public service can be used by people with its URL; that is separate from the repository's visibility setting.
+The GitHub repository stores the source code; GitHub does not run this Flask app as a website. To make a browser-accessible site, deploy it as a Python web service with a hosting provider. Follow that provider's instructions for the build and start commands. A deployed public service can be used by people with its URL; that is separate from the repository's visibility setting.
+
+
 

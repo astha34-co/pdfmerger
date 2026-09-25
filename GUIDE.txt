@@ -47,7 +47,6 @@ SOURCE CODE MAP
 - templates/index.html: page structure and JavaScript interactions.
 - static/style.css: visual design, typography, and mobile layout.
 - requirements.txt: Python packages used by the application.
-- render.yaml: configuration for deploying a hosted Python service.
 
 LEARNING TOPICS DEMONSTRATED
 ----------------------------
@@ -71,4 +70,6 @@ BEHAVIOR AND LIMITS
 
 This guide describes the current project behavior. It does not claim that an
 external grading rubric or deployment review has been completed.
+
+
 
