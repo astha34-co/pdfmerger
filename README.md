@@ -1,55 +1,70 @@
-# PDF Merge
+# PDF Merge App
 
-A small Flask web app that combines PDF files in the order you choose. The merge is performed by PyPDF2 on the server; uploaded files are held in memory during the request and are not written to disk.
+A small web app for combining multiple PDF files into one PDF. It uses **Flask** for the web server and **PyPDF2** to merge the files. The page has a vintage editorial style and works on desktop and mobile screens.
 
-## Run locally
+**GitHub repository:** https://github.com/astha34-co/pdfmerger
 
-Requirements: Python 3.10 or newer.
+## What the app does
+
+- Lets a user select or drop multiple PDF files.
+- Shows the selected files and lets the user change their order or remove a file.
+- Requires at least two files before merging.
+- Merges PDFs in the displayed order and downloads the result as `merged.pdf`.
+- Rejects requests larger than 50 MB and shows an error if a PDF cannot be read.
+
+## Run the app on your computer
+
+Install Python 3.10 or newer. Open a terminal in the project folder and create a virtual environment:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/pdf-merger-web.git
-cd pdf-merger-web
 python -m venv .venv
 ```
 
-Activate the environment, then install and run:
+Activate the environment. Use the command for your terminal:
 
 ```bash
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
+# Git Bash on Windows
+source .venv/Scripts/activate
 
-# macOS/Linux (use this activation command instead)
+# PowerShell on Windows
+# .venv\Scripts\Activate.ps1
+
+# macOS or Linux
 # source .venv/bin/activate
+```
 
+Install the packages and start the app:
+
+```bash
 python -m pip install -r requirements.txt
 python app.py
 ```
 
-Open <http://127.0.0.1:5000>. To use it from another device on the same Wi-Fi, run `flask --app app run --host=0.0.0.0` and open `http://YOUR-COMPUTER-IP:5000` on that device. Both devices need to be on the same network, and the computer firewall must allow the connection.
+Open <http://127.0.0.1:5000> in a browser. Stop the local server by pressing **Ctrl+C** in the terminal.
 
-## Publish the code on GitHub
+## How to use it
 
-Create an empty repository on GitHub, then from this project folder run:
+1. Choose PDF files with **Select PDF Sheets**, or drop them on the composing table.
+2. Review the galley proof. Use the arrows to set the order and **Remove** to take out a file.
+3. Select **Run the Press**. The browser downloads `merged.pdf` when the merge succeeds.
 
-```bash
-git init
-git add .
-git commit -m "Initial PDF merger app"
-git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/pdf-merger-web.git
-git push -u origin main
-```
+## Project files
 
-Replace the sample repository URL with your own. GitHub stores the code; it does not run this Flask app as a website.
+| File | Purpose |
+| --- | --- |
+| `app.py` | Flask routes, upload validation, PyPDF2 merge, and download response. |
+| `templates/index.html` | Page structure and browser-side file selection, ordering, and submission behavior. |
+| `static/style.css` | Page colors, typography, layout, and responsive styling. |
+| `requirements.txt` | Python packages needed to run the app. |
+| `render.yaml` | Render web service configuration for deployment. |
+| `.gitignore` | Keeps local environments, secrets, and PDF files out of Git commits. |
+| `GUIDE.txt` | Plain-text project overview, setup, usage, and review instructions. |
 
-## Deploy a shareable website
+## Uploads and privacy
 
-This repository includes `render.yaml` for Render. Push the project to GitHub, sign in to Render, choose **New > Blueprint**, and select the repository. Render reads the configuration, installs `requirements.txt`, and starts the web service. Once deployment finishes, open the provided `onrender.com` URL from any device.
+The app accepts requests up to 50 MB total. Uploaded files are passed to PyPDF2 as in-memory streams and are not saved as uploaded files by this code. When hosted, files are sent to the server running the app for processing. Avoid using a public deployment for confidential PDFs unless you have reviewed the hosting provider and added any access controls you need.
 
-## Usage and limits
+## Publish or deploy
 
-1. Select or drop at least two PDFs.
-2. Use the list to check their merge order and remove files if needed.
-3. Choose **Merge PDFs**. The browser downloads `merged.pdf`.
+The GitHub repository stores the source code; GitHub does not run this Flask app as a website. To make a browser-accessible site, deploy it as a Python web service on a host such as Render. The included `render.yaml` configures the build and Gunicorn start command. A deployed public service can be used by people with its URL; that is separate from the repository's visibility setting.
 
-The app accepts requests up to 50 MB total. It does not retain uploaded files after a request. For public production use with untrusted traffic, add rate limiting and stronger content validation, and review the hosting provider's upload and privacy limits.

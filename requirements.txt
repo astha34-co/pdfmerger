@@ -1,3 +1,7 @@
+# Python packages used by the PDF merger.
+# Flask handles the web app; PyPDF2 combines the selected PDF files.
 Flask>=3.0,<4.0
 PyPDF2>=3.0,<4.0
+
+# Gunicorn runs the app on Linux hosting platforms such as Render.
 gunicorn>=22.0,<24.0; platform_system != "Windows"

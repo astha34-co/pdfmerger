@@ -1,0 +1,74 @@
+PDF MERGE APP — PROJECT GUIDE
+============================
+
+PROJECT SUMMARY
+---------------
+This web application combines two or more PDF files into one PDF. It uses
+Python, Flask, and PyPDF2. The browser interface uses HTML, CSS, and JavaScript.
+
+SOURCE REPOSITORY
+-----------------
+https://github.com/astha34-co/pdfmerger
+
+HOW TO RUN THE PROJECT
+----------------------
+Requirements: Python 3.10 or newer.
+
+1. Download or clone the repository and open a terminal in the project folder.
+2. Create a virtual environment:
+       python -m venv .venv
+3. Activate it.
+   Git Bash on Windows:
+       source .venv/Scripts/activate
+   PowerShell on Windows:
+       .venv\Scripts\Activate.ps1
+   macOS or Linux:
+       source .venv/bin/activate
+4. Install the required packages:
+       python -m pip install -r requirements.txt
+5. Start the web app:
+       python app.py
+6. Open this address in a browser on the same computer:
+       http://127.0.0.1:5000
+
+PROJECT REVIEW WALKTHROUGH
+----------------------------
+- Open the home page and review the editorial-style, responsive interface.
+- Select or drop PDF files and confirm their names appear in the list.
+- Add at least two PDFs and confirm the merge button becomes available.
+- Move files up or down and confirm the displayed order changes.
+- Remove a file and confirm the file count updates.
+- Merge two readable PDFs and confirm that the browser downloads merged.pdf.
+- Submit fewer than two files or an unreadable PDF and review the error message.
+
+SOURCE CODE MAP
+---------------
+- app.py: Flask routes, uploaded-file checks, request-size limit, and merge.
+- templates/index.html: page structure and JavaScript interactions.
+- static/style.css: visual design, typography, and mobile layout.
+- requirements.txt: Python packages used by the application.
+- render.yaml: configuration for deploying a hosted Python service.
+
+LEARNING TOPICS DEMONSTRATED
+----------------------------
+- Python packages and virtual environments.
+- Flask routes and HTML templates.
+- HTTP form submission with multiple uploaded files.
+- Browser-side file selection, list updates, and form submission.
+- Input checks, file-size limits, and user-facing error messages.
+- PDF merging with PyPDF2 and a downloadable response.
+- Git and GitHub source-code versioning.
+
+BEHAVIOR AND LIMITS
+-------------------
+- At least two PDF-named files are required.
+- The total request limit is 50 MB.
+- Uploaded file streams are processed in memory; this app code does not save
+  the uploaded files to disk.
+- A hosted copy receives files on its server for processing.
+- GitHub contains the source code. Hosting is a separate step for a public
+  website link.
+
+This guide describes the current project behavior. It does not claim that an
+external grading rubric or deployment review has been completed.
+
