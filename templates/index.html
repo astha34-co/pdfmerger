@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#eee8d9">
+    <title>The Paper Press — PDF Merger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page-wrap">
+        <header class="masthead">
+            <div class="masthead-main">
+                <span class="seal" aria-hidden="true">PP</span>
+                <div class="masthead-copy">
+                    <div class="kicker">EST. 2024 <span>·</span> EDITORIAL UTILITY</div>
+                    <div class="wordmark">THE PAPER PRESS</div>
+                    <p class="tagline">Combine your documents. Print your story.</p>
+                </div>
+            </div>
+            <div class="masthead-note"><span class="lock" aria-hidden="true">⌑</span> PRIVATE SESSION<br><small>50 MB MAX · PDF ONLY</small></div>
+        </header>
+
+        <div class="edition-line"><span>AWAITING PRESS</span><i></i><span>ISSUE NO. 001 / 2026</span></div>
+
+        <main>
+            <section class="intro-grid">
+                <div class="intro-copy">
+                    <div class="kicker red">A FOCUSED DOCUMENT PRESS</div>
+                    <h1>ALL YOUR<br>DOCUMENTS.<br><em>ONE VOLUME.</em></h1>
+                    <p>Put your papers in order, send them through the press, and take home one clean, bound PDF. No accounts. No clutter. No detours.</p>
+                </div>
+                <aside class="ledger top-ledger" aria-label="Press status">
+                    <div class="ledger-rule"></div>
+                    <div class="kicker">PRESS LEDGER <span class="ledger-number">001</span></div>
+                    <div class="ledger-label">CURRENT EDITION</div>
+                    <div id="ledgerStatus" class="ledger-value">BLANK</div>
+                    <div class="ledger-rule light"></div>
+                    <div class="ledger-label">AWAITING PRESS</div>
+                    <p id="ledgerMessage">The composing table is clear.</p>
+                    <blockquote>“A document is a story waiting for its order.”<cite>— HOUSE NOTE, SHELF B</cite></blockquote>
+                </aside>
+            </section>
+
+            {% if error %}<div class="error" role="alert">{{ error }}</div>{% endif %}
+
+            <section class="compose-section" aria-labelledby="compose-title">
+                <div class="compose-main">
+                    <div class="section-index">01 / ADD YOUR SHEETS</div>
+                    <h2 id="compose-title">THE COMPOSING TABLE</h2>
+                    <form id="mergeForm" action="{{ url_for('merge_pdfs') }}" method="post" enctype="multipart/form-data">
+                        <label class="upload-table" id="dropZone" for="pdfInput">
+                            <input id="pdfInput" type="file" name="pdfs" accept=".pdf,application/pdf" multiple>
+                            <span class="upload-icon" aria-hidden="true">↑</span>
+                            <strong>PLACE PDFS HERE</strong>
+                            <span class="upload-copy">Drop your documents on the composing table, or<br class="desktop-break"> select them from your desk.</span>
+                            <span class="browse-button">SELECT PDF SHEETS</span>
+                            <small>PDF ONLY · FILES ARE HELD IN MEMORY WHILE MERGING</small>
+                        </label>
+                    </form>
+                </div>
+                <aside class="house-rules">
+                    <div class="rules-heading"><span></span> THE HOUSE RULES</div>
+                    <p><b>A.</b> PDFs are arranged from top to bottom.</p>
+                    <p><b>B.</b> Pressing creates one finished volume.</p>
+                    <p><b>C.</b> Your files are processed for the merge, then discarded.</p>
+                    <div class="rule-footnote">THE PRESS ACCEPTS STANDARD PDF FILES UP TO THE 50 MB REQUEST LIMIT.</div>
+                </aside>
+            </section>
+
+            <section class="proof-section" aria-labelledby="proof-title">
+                <div class="section-index">02 / SET THE ORDER</div>
+                <div class="proof-heading-row"><h2 id="proof-title">THE GALLEY PROOF</h2><span id="fileCount">0 SHEETS</span></div>
+                <ul id="fileList" class="file-list" aria-live="polite"></ul>
+                <div id="emptyState" class="proof-empty"><span aria-hidden="true">▤</span><em>Your proof is waiting for its first sheet.</em></div>
+            </section>
+
+            <section class="run-section">
+                <div>
+                    <div class="section-index">03 / RUN THE PRESS</div>
+                    <p>One click. One volume. No going back to the pile.</p>
+                </div>
+                <button id="mergeButton" type="submit" form="mergeForm" disabled><span aria-hidden="true">▶</span><span>RUN THE PRESS</span><span class="button-arrow">→</span></button>
+            </section>
+        </main>
+        <footer><span>THE PAPER PRESS</span><span>MADE FOR DOCUMENTS THAT BELONG TOGETHER</span><span>001 — 2026</span></footer>
+    </div>
+    <script>
+        const picker = document.getElementById("pdfInput");
+        const form = document.getElementById("mergeForm");
+        const dropZone = document.getElementById("dropZone");
+        const fileList = document.getElementById("fileList");
+        const emptyState = document.getElementById("emptyState");
+        const fileCount = document.getElementById("fileCount");
+        const mergeButton = document.getElementById("mergeButton");
+        const ledgerStatus = document.getElementById("ledgerStatus");
+        const ledgerMessage = document.getElementById("ledgerMessage");
+        let selectedFiles = [];
+
+        function addFiles(files) {
+            for (const file of files) {
+                if (!file.name.toLowerCase().endsWith(".pdf")) continue;
+                if (!selectedFiles.some(item => item.name === file.name && item.size === file.size && item.lastModified === file.lastModified)) selectedFiles.push(file);
+            }
+            renderFiles();
+        }
+
+        function renderFiles() {
+            fileList.replaceChildren();
+            selectedFiles.forEach((file, index) => {
+                const row = document.createElement("li");
+                row.className = "file-item";
+                const number = document.createElement("span");
+                number.className = "sheet-number";
+                number.textContent = String(index + 1).padStart(2, "0");
+                const icon = document.createElement("span");
+                icon.className = "file-icon";
+                icon.textContent = "PDF";
+                const details = document.createElement("span");
+                details.className = "file-details";
+                const name = document.createElement("strong");
+                name.textContent = file.name;
+                const size = document.createElement("small");
+                size.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                details.append(name, size);
+                const controls = document.createElement("span");
+                controls.className = "row-controls";
+                for (const [label, offset, glyph] of [["Move up", -1, "↑"], ["Move down", 1, "↓"]]) {
+                    const move = document.createElement("button");
+                    move.type = "button";
+                    move.className = "move-btn";
+                    move.textContent = glyph;
+                    move.setAttribute("aria-label", `${label}: ${file.name}`);
+                    move.disabled = index + offset < 0 || index + offset >= selectedFiles.length;
+                    move.addEventListener("click", () => {
+                        [selectedFiles[index], selectedFiles[index + offset]] = [selectedFiles[index + offset], selectedFiles[index]];
+                        renderFiles();
+                    });
+                    controls.append(move);
+                }
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "remove-btn";
+                remove.textContent = "REMOVE";
+                remove.setAttribute("aria-label", `Remove ${file.name}`);
+                remove.addEventListener("click", () => { selectedFiles.splice(index, 1); renderFiles(); });
+                controls.append(remove);
+                row.append(number, icon, details, controls);
+                fileList.append(row);
+            });
+            emptyState.hidden = selectedFiles.length > 0;
+            fileCount.textContent = `${String(selectedFiles.length).padStart(2, "0")} ${selectedFiles.length === 1 ? "SHEET" : "SHEETS"}`;
+            mergeButton.disabled = selectedFiles.length < 2;
+            ledgerStatus.textContent = selectedFiles.length ? `${String(selectedFiles.length).padStart(2, "0")} SHEETS` : "BLANK";
+            ledgerMessage.textContent = selectedFiles.length ? "The galley is set. Check the order." : "The composing table is clear.";
+        }
+
+        picker.addEventListener("change", () => { addFiles(picker.files); picker.value = ""; });
+        for (const name of ["dragenter", "dragover"]) dropZone.addEventListener(name, event => { event.preventDefault(); dropZone.classList.add("is-dragging"); });
+        for (const name of ["dragleave", "drop"]) dropZone.addEventListener(name, event => { event.preventDefault(); dropZone.classList.remove("is-dragging"); });
+        dropZone.addEventListener("drop", event => addFiles(event.dataTransfer.files));
+        form.addEventListener("submit", event => {
+            if (selectedFiles.length < 2) { event.preventDefault(); return; }
+            const transfer = new DataTransfer();
+            selectedFiles.forEach(file => transfer.items.add(file));
+            picker.files = transfer.files;
+            mergeButton.disabled = true;
+            mergeButton.querySelector("span:nth-child(2)").textContent = "THE PRESS IS RUNNING…";
+        });
+        renderFiles();
+    </script>
+</body>
+</html>
