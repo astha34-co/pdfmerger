@@ -4,6 +4,8 @@ A small web app for combining multiple PDF files into one PDF. It uses **Flask**
 
 **GitHub repository:** https://github.com/astha34-co/pdfmerger
 
+**Live app:** https://pdfmerger-oqrm.onrender.com
+
 ## What the app does
 
 - Lets a user select or drop multiple PDF files.
@@ -65,7 +67,15 @@ The app accepts requests up to 50 MB total. Uploaded files are passed to PyPDF2 
 
 ## Publish or deploy
 
-The GitHub repository stores the source code; GitHub does not run this Flask app as a website. To make a browser-accessible site, deploy it as a Python web service with a hosting provider. Follow that provider's instructions for the build and start commands. A deployed public service can be used by people with its URL; that is separate from the repository's visibility setting.
+The GitHub repository stores the source code; GitHub does not run this Flask app as a website. This project is deployed on Render as a Python web service:
+
+- **Live app:** <https://pdfmerger-oqrm.onrender.com>
+- **Build command:** `pip install -r requirements.txt`
+- **Start command:** `gunicorn app:app`
+
+Open the live app URL in a browser to use it. On Render's free plan, the service can spin down after inactivity, so the first visit after it has been idle may take 50 seconds or more to respond. Wait for it to wake up and load.
+
+Closing the browser tab only closes your view of the app; the Render service and its URL remain available. To take the app offline, use the service controls in the Render dashboard to suspend or delete the web service. Suspending can be reversed; deleting removes the service configuration. The GitHub repository remains separate from the deployed service.
 
 
 
