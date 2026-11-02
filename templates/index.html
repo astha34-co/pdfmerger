@@ -80,7 +80,10 @@
                     <div class="section-index">03 / RUN THE PRESS</div>
                     <p>One click. One volume. No going back to the pile.</p>
                 </div>
-                <button id="mergeButton" type="submit" form="mergeForm" disabled><span aria-hidden="true">▶</span><span>RUN THE PRESS</span><span class="button-arrow">→</span></button>
+                <div class="run-action">
+                    <button id="mergeButton" type="submit" form="mergeForm"><span aria-hidden="true">▶</span><span>RUN THE PRESS</span><span class="button-arrow">→</span></button>
+                    <p id="clientError" class="error" role="alert" hidden></p>
+                </div>
             </section>
         </main>
         <footer><span>THE PAPER PRESS</span><span>MADE FOR DOCUMENTS THAT BELONG TOGETHER</span><span>001 — 2026</span></footer>
@@ -93,16 +96,26 @@
         const emptyState = document.getElementById("emptyState");
         const fileCount = document.getElementById("fileCount");
         const mergeButton = document.getElementById("mergeButton");
+        const clientError = document.getElementById("clientError");
         const ledgerStatus = document.getElementById("ledgerStatus");
         const ledgerMessage = document.getElementById("ledgerMessage");
         let selectedFiles = [];
 
         function addFiles(files) {
+            const invalidFiles = [];
             for (const file of files) {
-                if (!file.name.toLowerCase().endsWith(".pdf")) continue;
+                if (!file.name.toLowerCase().endsWith(".pdf")) {
+                    invalidFiles.push(file.name);
+                    continue;
+                }
                 if (!selectedFiles.some(item => item.name === file.name && item.size === file.size && item.lastModified === file.lastModified)) selectedFiles.push(file);
             }
             renderFiles();
+            if (invalidFiles.length) {
+                const names = invalidFiles.map(name => `“${name}”`).join(", ");
+                clientError.textContent = `${names} ${invalidFiles.length === 1 ? "isn't" : "aren't"} a PDF. Only .pdf files are accepted.`;
+                clientError.hidden = false;
+            }
         }
 
         function renderFiles() {
@@ -150,7 +163,10 @@
             });
             emptyState.hidden = selectedFiles.length > 0;
             fileCount.textContent = `${String(selectedFiles.length).padStart(2, "0")} ${selectedFiles.length === 1 ? "SHEET" : "SHEETS"}`;
-            mergeButton.disabled = selectedFiles.length < 2;
+            if (selectedFiles.length >= 2) {
+                clientError.hidden = true;
+                clientError.textContent = "";
+            }
             ledgerStatus.textContent = selectedFiles.length ? `${String(selectedFiles.length).padStart(2, "0")} SHEETS` : "BLANK";
             ledgerMessage.textContent = selectedFiles.length ? "The galley is set. Check the order." : "The composing table is clear.";
         }
@@ -160,7 +176,13 @@
         for (const name of ["dragleave", "drop"]) dropZone.addEventListener(name, event => { event.preventDefault(); dropZone.classList.remove("is-dragging"); });
         dropZone.addEventListener("drop", event => addFiles(event.dataTransfer.files));
         form.addEventListener("submit", event => {
-            if (selectedFiles.length < 2) { event.preventDefault(); return; }
+            if (selectedFiles.length < 2) {
+                event.preventDefault();
+                clientError.textContent = "Choose at least two PDF files to merge.";
+                clientError.hidden = false;
+                clientError.scrollIntoView({ behavior: "smooth", block: "center" });
+                return;
+            }
             const transfer = new DataTransfer();
             selectedFiles.forEach(file => transfer.items.add(file));
             picker.files = transfer.files;

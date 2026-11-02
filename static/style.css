@@ -530,6 +530,14 @@ body {
     transition: .18s ease;
 }
 
+.run-action {
+    min-width: 0;
+}
+
+.run-action .error {
+    margin: 12px 0 0;
+}
+
 .run-section button:not(:disabled):hover {
     background: #8e332c;
     transform: translateY(-2px);
